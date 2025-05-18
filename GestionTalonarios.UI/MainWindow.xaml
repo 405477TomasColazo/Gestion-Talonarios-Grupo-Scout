@@ -4,9 +4,439 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GestionTalonarios.UI"
+        xmlns:converters="clr-namespace:GestionTalonarios.UI.Converters"
+        xmlns:viewModels="clr-namespace:GestionTalonarios.UI.ViewModels" d:DataContext="{d:DesignInstance Type=viewModels:MainViewModel}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Venta de Locro 25 de Mayo - Grupo Scout José Hernández" 
+        Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen" 
+        Background="#F0F0F0">
 
+    <Window.Resources>
+        <!-- Convertidores -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converters:BooleanAndConverter x:Key="BooleanAndConverter"/>
+        <converters:EnumBooleanConverter x:Key="EnumBooleanConverter"/>
+        <converters:MultiValueBooleanToVisibilityConverter x:Key="MultiValueBooleanToVisibilityConverter"/>
+
+        <!-- Estilos -->
+        <Style TargetType="Button" x:Key="ActionButton">
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="#1565C0"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Button" x:Key="PayButton" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Background" Value="#2E7D32"/>
+        </Style>
+
+        <Style TargetType="Button" x:Key="PickupButton" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Background" Value="#0D47A1"/>
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="HeaderStyle">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style TargetType="Border" x:Key="SectionBorder">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="0,10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="1" BlurRadius="3" Opacity="0.2"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Banner -->
+            <RowDefinition Height="Auto"/>
+            <!-- Contador de porciones -->
+            <RowDefinition Height="Auto"/>
+            <!-- Buscador -->
+            <RowDefinition Height="*"/>
+            <!-- Contenido principal -->
+            <RowDefinition Height="Auto"/>
+            <!-- Barra de estado -->
+        </Grid.RowDefinitions>
+
+        <!-- Banner del Evento -->
+        <Border Grid.Row="0" Style="{StaticResource SectionBorder}" Background="#0D47A1" Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="GRAN VENTA DE LOCRO" Foreground="#32cd32" FontSize="20" FontWeight="Bold" Margin="0,5"/>
+                <TextBlock Text=" - " Foreground="#32cd32" FontSize="20" FontWeight="Bold" Margin="0,5"/>
+                <TextBlock Text="GRUPO SCOUT JOSÉ HERNÁNDEZ" Foreground="#32cd32" FontSize="20" FontWeight="Bold" Margin="0,5"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Contador de Porciones Restantes -->
+        <Border Grid.Row="1" Style="{StaticResource SectionBorder}" Margin="0,0,0,10" Background="#E8F5E9">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Agregar logo/nombre del grupo en el lado izquierdo -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="GS José Hernández" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#0D47A1"/>
+                    <!--<Button Content="Nuevo Ticket" 
+                    Command="{Binding NuevoTicketCommand}"
+                    Style="{StaticResource ActionButton}"/>-->
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="Porciones de locro pendientes:" 
+                               FontSize="16" 
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"/>
+                    <TextBlock FontSize="22" FontWeight="Bold">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#0D47A1"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding PorcionesRestantes}" Value="0">
+                                        <Setter Property="Foreground" Value="#2E7D32"/>
+                                        <Setter Property="Text" Value="0 - ¡Todo entregado!"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                        <TextBlock.Text>
+                            <Binding Path="PorcionesRestantes"/>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </StackPanel>
+
+                <Button Grid.Column="2" 
+                        Content="Ver Detalle" 
+                        Command="{Binding VerDetallePorcionesCommand}"
+                        Style="{StaticResource ActionButton}"
+                        Padding="10,5"
+                        Background="#607D8B"/>
+            </Grid>
+        </Border>
+
+        <!-- Buscador -->
+        <Border Grid.Row="2" Style="{StaticResource SectionBorder}">
+            <StackPanel>
+                <TextBlock Text="Búsqueda de Tickets de Locro" Style="{StaticResource HeaderStyle}"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox x:Name="txtBusqueda" Grid.Column="0" 
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Padding="10" 
+                             FontSize="14"
+                             Margin="0,0,10,0"
+                             VerticalContentAlignment="Center"
+                             KeyDown="txtBusqueda_KeyDown"
+                             ToolTip="Buscar por número de ticket, nombre de vendedor o comprador"/>
+
+                    <Button x:Name="btnBuscar" 
+                            Grid.Column="1"
+                            Content="Buscar"
+                            Command="{Binding SearchCommand}"
+                            Style="{StaticResource ActionButton}"/>
+
+                    <Button Grid.Column="2"
+                            Content="Limpiar"
+                            Command="{Binding LimpiarFiltrosCommand}"
+                            Style="{StaticResource ActionButton}"
+                            Background="#9E9E9E"
+                            Margin="5,5,0,5"/>
+                </Grid>
+
+                <TextBlock Text="Filtros de búsqueda:" Margin="0,15,0,5" FontWeight="SemiBold"/>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                    <RadioButton x:Name="rbTodos" Content="Todos" 
+                                 Margin="0,0,15,0" 
+                                 IsChecked="{Binding TipoBusqueda, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=All}"/>
+                    <RadioButton x:Name="rbNumero" Content="Nº Ticket" 
+                                 Margin="0,0,15,0" 
+                                 IsChecked="{Binding TipoBusqueda, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Code}"/>
+                    <RadioButton x:Name="rbVendedor" Content="Vendedor" 
+                                 Margin="0,0,15,0" 
+                                 IsChecked="{Binding TipoBusqueda, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Seller}"/>
+                    <RadioButton x:Name="rbComprador" Content="Comprador" 
+                                 Margin="0,0,15,0" 
+                                 IsChecked="{Binding TipoBusqueda, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=Client}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Contenido Principal: Lista + Detalles -->
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1.2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Lista de Resultados -->
+            <Border Grid.Column="0" Style="{StaticResource SectionBorder}" Margin="0,10,10,0">
+                <DockPanel>
+                    <TextBlock Text="Resultados de la búsqueda" Style="{StaticResource HeaderStyle}" DockPanel.Dock="Top" Foreground="#0D47A1"/>
+        
+                    <!--<ListView x:Name="lvResultados" 
+                        ItemsSource="{Binding Tickets}"
+                        SelectedItem="{Binding SelectedTicket, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        BorderThickness="0"
+                        SelectionMode="Single">-->
+                    <ListView x:Name="lvResultados" 
+          ItemsSource="{Binding Tickets}"
+          SelectedItem="{Binding SelectedTicket, Mode=TwoWay}"
+          SelectionChanged="LvResultados_SelectionChanged"
+          BorderThickness="0"
+          SelectionMode="Single">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Ticket" DisplayMemberBinding="{Binding TicketNumber}" Width="70"/>
+                                <GridViewColumn Header="Vendedor" DisplayMemberBinding="{Binding SellerName}" Width="130"/>
+                                <GridViewColumn Header="Comprador" DisplayMemberBinding="{Binding ClientName}" Width="130"/>
+                                <GridViewColumn Header="Porciones" DisplayMemberBinding="{Binding QuantityDisplay}" Width="80"/>
+                                <GridViewColumn Header="Estado" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsPaid}" Value="True">
+                                                                <Setter Property="Text" Value="PAGADO"/>
+                                                                <Setter Property="Foreground" Value="#43A047"/>
+                                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsPaid}" Value="False">
+                                                                <Setter Property="Text" Value="PENDIENTE"/>
+                                                                <Setter Property="Foreground" Value="#F44336"/>
+                                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Entregado" Width="90">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock>
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsDelivered}" Value="True">
+                                                                <Setter Property="Text" Value="SÍ"/>
+                                                                <Setter Property="Foreground" Value="#43A047"/>
+                                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsDelivered}" Value="False">
+                                                                <Setter Property="Text" Value="NO"/>
+                                                                <Setter Property="Foreground" Value="#9E9E9E"/>
+                                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </DockPanel>
+            </Border>
+
+            <!-- Panel de Detalles -->
+            <Border Grid.Column="1" Style="{StaticResource SectionBorder}" Margin="10,10,0,0">
+                <DockPanel LastChildFill="True">
+                    <TextBlock DockPanel.Dock="Top" Text="Detalles del Ticket de Locro" Style="{StaticResource HeaderStyle}" Foreground="#0D47A1"/>
+
+                    <!-- Mensaje cuando no hay selección -->
+                    <TextBlock Name="txtNoSelection"
+                  Text="Seleccione un ticket para ver sus detalles"
+                  FontSize="14"
+                  Foreground="#757575"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"/>
+
+                    <!-- Panel de detalles -->
+                    <Grid Name="panelDetails" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Scrollviewer para los detalles -->
+                        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Margin="0,0,0,15">
+                                <!-- Sección info básica -->
+                                <Border Background="#F8F8F8" CornerRadius="4" Padding="10" Margin="0,0,0,15">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Número de Ticket -->
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Nº Ticket:" 
+                                     FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Name="txtTicketNumber" 
+                                     Margin="0,5,0,5"/>
+
+                                        <!-- Vendedor -->
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Vendedor:" 
+                                     FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Name="txtSellerName" 
+                                     Margin="0,5,0,5"/>
+
+                                        <!-- Comprador -->
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Comprador:" 
+                                     FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Name="txtClientName" 
+                                     Margin="0,5,0,5"/>
+
+                                        <!-- Cantidad -->
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Porciones de Locro:"
+                                     FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Name="txtQuantity" 
+                                     Margin="0,5,0,5"/>
+
+                                        <!-- Estado de Pago -->
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Estado de Pago:" 
+                                     FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Name="txtPaymentStatus" 
+                                     Margin="0,5,0,5"/>
+
+                                        <!-- Estado de Entrega -->
+                                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Estado de Entrega:" 
+                                     FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                        <TextBlock Grid.Row="5" Grid.Column="1" Name="txtDeliveryStatus" 
+                                     Margin="0,5,0,5"/>
+
+                                        <!-- Precio -->
+                                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Precio Unitario:" 
+                                     FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                        <TextBlock Grid.Row="6" Grid.Column="1" Name="txtUnitPrice" 
+                                     Margin="0,5,0,5"/>
+
+                                        <!-- Total -->
+                                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Total:" 
+                                     FontWeight="SemiBold" Margin="0,5,10,5"/>
+                                        <TextBlock Grid.Row="7" Grid.Column="1" Name="txtTotalAmount" 
+                                     FontWeight="Bold" Foreground="#1976D2"
+                                     Margin="0,5,0,5"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Observaciones -->
+                                <Expander Header="Observaciones" IsExpanded="False">
+                                    <TextBox Name="txtObservations" 
+                               TextWrapping="Wrap"
+                               AcceptsReturn="True"
+                               Height="80"
+                               Margin="0,10,0,0"
+                               IsReadOnly="True"/>
+                                </Expander>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- Panel de botones - siempre abajo -->
+                        <Border Grid.Row="1" BorderBrush="#DDDDDD" BorderThickness="0,1,0,0" Padding="0,15,0,0">
+                            <StackPanel>
+                                <Button Name="btnPay" 
+                           Content="MARCAR COMO PAGADO"
+                           Command="{Binding MarcarPagadoCommand}"
+                           Background="#43A047" 
+                           Foreground="White"
+                           Padding="15,8"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           BorderThickness="0"
+                           Margin="0,5"/>
+
+                                <Button Name="btnDeliver"
+                           Content="MARCAR COMO ENTREGADO"
+                           Command="{Binding MarcarEntregadoCommand}"
+                           Background="#0D47A1"
+                           Foreground="White"
+                           Padding="15,8"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           BorderThickness="0"
+                           Margin="0,5,0,0"
+                           Visibility="Collapsed"/>
+
+                                <TextBlock Name="txtDelivered"
+                              Text="¡Este locro ya ha sido entregado!" 
+                              FontWeight="Bold" 
+                              Foreground="#2E7D32"
+                              HorizontalAlignment="Center"
+                              FontSize="14"
+                              Padding="15"
+                              Margin="0,5,0,0"
+                              Visibility="Collapsed"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- Barra de estado -->
+        <Grid Grid.Row="4" Margin="0,5,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" 
+                       Text="{Binding StatusMessage}" 
+                       VerticalAlignment="Center" 
+                       Foreground="#757575"/>
+
+            <ProgressBar Grid.Column="1" 
+                         IsIndeterminate="{Binding IsBusy}" 
+                         Width="100" 
+                         Height="5" 
+                         Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </Grid>
     </Grid>
 </Window>
