@@ -50,7 +50,7 @@ namespace GestionTalonarios.UI
             if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
             {
                 // Crear datos de diseño para vista previa
-                DataContext = new MainViewModel(null); // No usar en producción
+                DataContext = new MainViewModel(null,null); // No usar en producción
             }
         }
 
@@ -149,7 +149,9 @@ namespace GestionTalonarios.UI
                     txtTicketNumber.Text = ticket.TicketNumber;
                     txtSellerName.Text = ticket.SellerName;
                     txtClientName.Text = ticket.ClientName;
-                    txtQuantity.Text = ticket.QuantityDisplay;
+                    txtQuantity.Text = $"Total: {ticket.QuantityDisplay}";
+                    txtTraditional.Text = $"• {ticket.TraditionalDisplay}";
+                    txtVegan.Text = $"• {ticket.VeganDisplay}";
                     txtPaymentStatus.Text = ticket.PaymentStatus;
                     txtDeliveryStatus.Text = ticket.DeliveryStatus;
                     txtUnitPrice.Text = $"$ {ticket.UnitCost:N2}";

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GestionTalonarios.Core.DTOs;
 using GestionTalonarios.Core.Enums;
 using GestionTalonarios.Core.Models;
 
@@ -15,5 +16,8 @@ namespace GestionTalonarios.Core.Interfaces
         Task PayTicketAsync(int id);
         Task DeliverTicketAsync(int id);
         Task<int> GetRemainingPortionsCountAsync();
+        Task<PorcionesResumenDto> GetRemainingPortionsDetailAsync();
+        Task<decimal> GetDefaultUnitPriceAsync();
+        Task<bool> CodeExistsAsync(int code);
     }
 }

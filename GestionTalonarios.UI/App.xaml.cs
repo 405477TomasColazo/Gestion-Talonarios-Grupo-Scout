@@ -6,7 +6,10 @@ using GestionTalonarios.Core.Interfaces;
 using GestionTalonarios.Core.Services;
 using GestionTalonarios.Data.Context;
 using GestionTalonarios.Data.Repositories;
+using GestionTalonarios.UI.Interfaces;
+using GestionTalonarios.UI.Services;
 using GestionTalonarios.UI.ViewModels;
+using GestionTalonarios.UI.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -66,6 +69,7 @@ namespace GestionTalonarios.UI
             _serviceProvider = services.BuildServiceProvider();
         }
 
+
         /// <summary>
         /// Configurar el archivo de configuración (appsettings.json)
         /// </summary>
@@ -103,6 +107,7 @@ namespace GestionTalonarios.UI
 
             // Registrar repositorios
             services.AddScoped<ITicketRepository, TicketRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
             // Agregar otros repositorios si es necesario
         }
 
@@ -113,6 +118,8 @@ namespace GestionTalonarios.UI
         {
             // Registrar servicios de negocio
             services.AddScoped<ITicketService, TicketService>();
+            services.AddScoped<IClientService, ClientService>();
+            services.AddSingleton<INavigationService, NavigationService>();
             // Agregar otros servicios si es necesario
         }
 
@@ -133,6 +140,7 @@ namespace GestionTalonarios.UI
         {
             // Registrar ventanas
             services.AddTransient<MainWindow>();
+            services.AddTransient<NuevoTicketWindow>();
             // Agregar otras ventanas si es necesario
         }
 

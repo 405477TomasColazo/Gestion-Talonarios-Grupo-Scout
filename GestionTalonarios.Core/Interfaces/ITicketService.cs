@@ -20,5 +20,9 @@ namespace GestionTalonarios.Core.Interfaces
         Task PayTicketAsync(int id);
         Task DeliverTicketAsync(int id);
         Task<int> ObtenerPorcionesRestantesAsync();
+        Task<PorcionesResumenDto> ObtenerDetallesPorcionesRestantesAsync();
+        Task<decimal> ObtenerPrecioUnitarioDefaultAsync();
+        Task<int> CrearTicketAsync(Ticket ticket);
+        Task<bool> ExistTicketAsync(int code);
     }
 }

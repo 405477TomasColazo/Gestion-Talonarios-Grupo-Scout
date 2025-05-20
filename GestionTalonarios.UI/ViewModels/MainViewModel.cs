@@ -10,6 +10,9 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using System.Windows;
 using GestionTalonarios.Core.Enums;
+using GestionTalonarios.UI.Views;
+using Microsoft.Extensions.DependencyInjection;
+using GestionTalonarios.UI.Interfaces;
 
 namespace GestionTalonarios.UI.ViewModels
 {
@@ -17,6 +20,7 @@ namespace GestionTalonarios.UI.ViewModels
     {
         private readonly ITicketService _ticketService;
         private readonly DispatcherTimer _updateTimer;
+        private readonly INavigationService _navigationService;
 
         // Propiedades observables
         private ObservableCollection<TicketViewModel> _tickets;
@@ -25,6 +29,8 @@ namespace GestionTalonarios.UI.ViewModels
         private SearchType _tipoBusqueda;
         private bool _isBusy;
         private int _porcionesRestantes;
+        private int _porcionesTradicionalesRestantes;
+        private int _porcionesVeganasRestantes;
         private string _statusMessage;
 
         public ObservableCollection<TicketViewModel> Tickets
@@ -71,6 +77,18 @@ namespace GestionTalonarios.UI.ViewModels
             set => SetProperty(ref _porcionesRestantes, value);
         }
 
+        public int PorcionesTradicionalesRestantes
+        {
+            get => _porcionesTradicionalesRestantes;
+            set => SetProperty(ref _porcionesTradicionalesRestantes, value);
+        }
+
+        public int PorcionesVeganasRestantes
+        {
+            get => _porcionesVeganasRestantes;
+            set => SetProperty(ref _porcionesVeganasRestantes, value);
+        }
+
         public string StatusMessage
         {
             get => _statusMessage;
@@ -85,10 +103,12 @@ namespace GestionTalonarios.UI.ViewModels
         public ICommand VerDetallePorcionesCommand { get; }
         public ICommand LimpiarFiltrosCommand { get; }
 
+
         // Constructor
-        public MainViewModel(ITicketService ticketService)
+        public MainViewModel(ITicketService ticketService,INavigationService navigationService)
         {
             _ticketService = ticketService;
+            _navigationService = navigationService;
 
             // Inicializar colecciones
             Tickets = new ObservableCollection<TicketViewModel>();
@@ -104,7 +124,7 @@ namespace GestionTalonarios.UI.ViewModels
             MarcarEntregadoCommand = new RelayCommand(
                 async param => await ExecuteMarcarEntregadoAsync(),
                 param => CanExecuteMarcarEntregado());
-            NuevoTicketCommand = new RelayCommand(async param => await ExecuteNuevoTicketAsync());
+            NuevoTicketCommand = new RelayCommand(ExecuteNuevoTicket);
             VerDetallePorcionesCommand = new RelayCommand(async param => await ExecuteVerDetallePorcionesAsync());
             LimpiarFiltrosCommand = new RelayCommand(async param => await ExecuteLimpiarFiltrosAsync());
 
@@ -120,6 +140,22 @@ namespace GestionTalonarios.UI.ViewModels
             LoadTicketsAsync();
         }
 
+        private void ExecuteNuevoTicket(object parameter)
+        {
+            try
+            {
+                if (_navigationService.ShowDialog<NuevoTicketWindow>() == true)
+                {
+                    // Recargar tickets y contador
+                    LoadTicketsAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "Error al abrir ventana de nuevo ticket";
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
         // Método para liberar recursos
         public void Cleanup()
         {
@@ -381,7 +417,10 @@ namespace GestionTalonarios.UI.ViewModels
         {
             try
             {
-                PorcionesRestantes = await _ticketService.ObtenerPorcionesRestantesAsync();
+                var porcionesData = await _ticketService.ObtenerDetallesPorcionesRestantesAsync();
+                PorcionesTradicionalesRestantes = porcionesData.PorcionesTradicionalesRestantes;
+                PorcionesVeganasRestantes = porcionesData.PorcionesVeganasRestantes;
+                PorcionesRestantes = porcionesData.TotalPorcionesRestantes;
             }
             catch (Exception ex)
             {

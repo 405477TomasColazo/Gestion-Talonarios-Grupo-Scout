@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using GestionTalonarios.Core.DTOs;
 using GestionTalonarios.Core.Enums;
 using GestionTalonarios.Core.Interfaces;
 using GestionTalonarios.Core.Models;
@@ -103,9 +104,10 @@ namespace GestionTalonarios.Data.Repositories
                                 ClientId = row.client_id,
                                 Code = row.code,
                                 UnitCost = row.unit_cost,
-                                Quantity = row.quantity,
                                 IsPaid = row.is_paid,
                                 Sold = row.sold,
+                                TraditionalQty = row.traditional_qty,
+                                VeganQty = row.vegan_qty,
                                 IsDelivered = row.is_delivered,
                                 Observations = row.observations,
                                 WithdrawalTime = row.withdrawal_time,
@@ -167,9 +169,9 @@ namespace GestionTalonarios.Data.Repositories
                             sql += "c.name LIKE @Busqueda";
                             break;
                         default: // Todos
-                            sql += "CAST(code AS NVARCHAR) LIKE @Busqueda OR " +
+                            sql += "(CAST(code AS NVARCHAR) LIKE @Busqueda OR " +
                                    "s.name LIKE @Busqueda OR " +
-                                   "c.name LIKE @Busqueda";
+                                   "c.name LIKE @Busqueda)";
                             break;
                     }
 
@@ -184,10 +186,11 @@ namespace GestionTalonarios.Data.Repositories
                             SellerId = row.seller_id,
                             ClientId = row.client_id,
                             UnitCost = row.unit_cost,
-                            Quantity = row.quantity,
                             IsPaid = row.is_paid,
                             Code = row.code,
                             Sold = row.sold,
+                            TraditionalQty = row.traditional_qty,
+                            VeganQty = row.vegan_qty,
                             IsDelivered = row.is_delivered,
                             Observations = row.observations,
                             WithdrawalTime = row.withdrawal_time,
@@ -264,6 +267,132 @@ namespace GestionTalonarios.Data.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener el conteo de porciones restantes");
+                throw;
+            }
+        }
+
+        public async Task<decimal> GetDefaultUnitPriceAsync()
+        {
+            try
+            {
+                using (var connection = _connectionFactory.CreateConnection())
+                {
+                    connection.Open();
+
+                    // Opción 1: Consultar un valor de una tabla de configuración
+                    /*
+                    const string sql = "SELECT value FROM Configuration WHERE key = 'PrecioUnitarioLocro'";
+                    var result = await connection.ExecuteScalarAsync<decimal?>(sql);
+                    return result ?? 350.0m; // Valor predeterminado si no se encuentra
+                    */
+
+                    // Opción 2: Usar el valor más común en tickets existentes
+                    const string sql = "SELECT TOP 1 unit_cost FROM Tickets ORDER BY sale_date DESC";
+                    var result = await connection.ExecuteScalarAsync<decimal?>(sql);
+                    return result ?? 350.0m; // Valor predeterminado si no hay tickets
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener precio unitario predeterminado");
+                return 350.0m; // Valor predeterminado en caso de error
+            }
+        }
+
+        public async Task<PorcionesResumenDto> GetRemainingPortionsDetailAsync()
+        {
+            try
+            {
+                using (var connection = _connectionFactory.CreateConnection())
+                {
+                    connection.Open();
+
+                    string sql = @"
+                SELECT 
+                    SUM(traditional_qty) AS PorcionesTradicionalesRestantes,
+                    SUM(vegan_qty) AS PorcionesVeganasRestantes
+                FROM Tickets 
+                WHERE is_paid = 1 AND is_delivered = 0";
+
+                    var result = await connection.QuerySingleAsync<PorcionesResumenDto>(sql);
+
+                    // Manejar posibles nulos (cuando no hay registros)
+                    result.PorcionesTradicionalesRestantes = result.PorcionesTradicionalesRestantes;
+                    result.PorcionesVeganasRestantes = result.PorcionesVeganasRestantes;
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener detalles de porciones restantes");
+                throw;
+            }
+        }
+
+        public async Task<bool> CodeExistsAsync(int code)
+        {
+            try
+            {
+                using (var connection = _connectionFactory.CreateConnection())
+                {
+                    await connection.OpenAsync();
+
+                    string sql = "SELECT COUNT(1) FROM Tickets WHERE code = @Code";
+
+                    int count = await connection.ExecuteScalarAsync<int>(sql, new { Code = code });
+
+                    return count > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al verificar si existe el código {code}");
+                throw;
+            }
+        }
+
+        public override async Task<int> AddAync(Ticket ticket)
+        {
+            try
+            {
+                using (var connection = _connectionFactory.CreateConnection())
+                {
+                    await connection.OpenAsync();
+
+                    // SQL con nombres exactos de las columnas en la base de datos
+                    string sql = @"
+                INSERT INTO Tickets (
+                    code, seller_id, client_id, unit_cost, 
+                    traditional_qty, vegan_qty, is_paid, is_delivered, 
+                    sold, observations, sale_date)
+                VALUES (
+                    @Code, @SellerId, @ClientId, @UnitCost, 
+                    @TraditionalQty, @VeganQty, @IsPaid, @IsDelivered, 
+                    @Sold, @Observations, @SaleDate);
+                SELECT CAST(SCOPE_IDENTITY() as int);";
+
+                    var parameters = new
+                    {
+                        ticket.Code,
+                        ticket.SellerId,
+                        ticket.ClientId,
+                        ticket.UnitCost,
+                        ticket.TraditionalQty,
+                        ticket.VeganQty,
+                        ticket.IsPaid,
+                        ticket.IsDelivered,
+                        ticket.Sold,
+                        ticket.Observations,
+                        SaleDate = ticket.SaleDate != default ? ticket.SaleDate : DateTime.Now
+                    };
+
+                    return await connection.ExecuteScalarAsync<int>(sql, parameters);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al agregar ticket en la tabla {_tableName}");
                 throw;
             }
         }

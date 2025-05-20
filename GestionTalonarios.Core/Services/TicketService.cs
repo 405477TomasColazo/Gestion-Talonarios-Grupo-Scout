@@ -89,6 +89,19 @@ namespace GestionTalonarios.Core.Services
             }
         }
 
+        public async Task<PorcionesResumenDto> ObtenerDetallesPorcionesRestantesAsync()
+        {
+            try
+            {
+                return await _ticketRepository.GetRemainingPortionsDetailAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener detalles de porciones restantes");
+                throw;
+            }
+        }
+
         public async Task<int> ObtenerPorcionesRestantesAsync()
         {
             try
@@ -121,6 +134,55 @@ namespace GestionTalonarios.Core.Services
         public Task UpdateTicketAsync(Ticket ticketDTO)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<decimal> ObtenerPrecioUnitarioDefaultAsync()
+        {
+            try
+            {
+                // Puedes implementar esto de varias formas:
+
+                // 1. Consultar una tabla de configuración
+                // return await _configRepository.GetDecimalValueAsync("PrecioUnitarioLocro");
+
+                // 2. Consultar directamente un valor predeterminado
+                return await _ticketRepository.GetDefaultUnitPriceAsync();
+
+                // 3. Como alternativa rápida, puedes codificar el valor
+                // return 350.0m;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener precio unitario predeterminado");
+                throw;
+            }
+        }
+        public async Task<int> CrearTicketAsync(Ticket ticket)
+        {
+            if (ticket == null)
+                throw new ArgumentNullException(nameof(ticket));
+
+            if (ticket.SellerId <= 0)
+                throw new ArgumentException("El vendedor es requerido");
+
+            if (ticket.ClientId <= 0)
+                throw new ArgumentException("El cliente es requerido");
+
+            if (ticket.TraditionalQty + ticket.VeganQty <= 0)
+                throw new ArgumentException("Debe tener al menos una porción");
+
+            if (ticket.UnitCost <= 0)
+                throw new ArgumentException("El precio unitario debe ser mayor a cero");
+
+            return await _ticketRepository.AddAync(ticket);
+        }
+
+        public async Task<bool> ExistTicketAsync(int code)
+        {
+            if (code <= 0)
+                return false;
+
+            return await _ticketRepository.CodeExistsAsync(code);
         }
     }
 }

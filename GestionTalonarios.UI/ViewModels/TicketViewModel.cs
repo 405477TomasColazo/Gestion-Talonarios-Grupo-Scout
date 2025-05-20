@@ -19,7 +19,6 @@ namespace GestionTalonarios.UI.ViewModels
         private string _clientName;
         private string _clientPhone;
         private decimal _unitCost;
-        private int _quantity;
         private bool _isPaid;
         private bool _isDelivered;
         private string _observations;
@@ -27,6 +26,8 @@ namespace GestionTalonarios.UI.ViewModels
         private DateTime _saleDate;
         private DateTime? _paymentDate;
         private decimal _totalAmount; // Monto total (cantidad x precio unitario)
+        private int _traditionalQty;
+        private int _veganQty;
 
         public int Id
         {
@@ -88,17 +89,43 @@ namespace GestionTalonarios.UI.ViewModels
             }
         }
 
-        public int Quantity
+        
+
+        public int TraditionalQty
         {
-            get => _quantity;
+            get => _traditionalQty;
             set
             {
-                if (SetProperty(ref _quantity, value))
+                if (SetProperty(ref _traditionalQty, value))
                 {
                     RecalculateTotalAmount();
+                    OnPropertyChanged(nameof(Quantity));
+                    OnPropertyChanged(nameof(QuantityDisplay));
+                    OnPropertyChanged(nameof(TraditionalDisplay));
+                    OnPropertyChanged(nameof(VeganDisplay));
                 }
             }
         }
+
+        public int VeganQty
+        {
+            get => _veganQty;
+            set
+            {
+                if (SetProperty(ref _veganQty, value))
+                {
+                    RecalculateTotalAmount();
+                    OnPropertyChanged(nameof(Quantity));
+                    OnPropertyChanged(nameof(QuantityDisplay));
+                    OnPropertyChanged(nameof(TraditionalDisplay));
+                    OnPropertyChanged(nameof(VeganDisplay));
+                }
+            }
+        }
+
+
+        public int Quantity => TraditionalQty + VeganQty;
+
 
         public bool IsPaid
         {
@@ -143,17 +170,20 @@ namespace GestionTalonarios.UI.ViewModels
         }
 
         // Propiedades adicionales para mostrar en la UI
+        public string QuantityDisplay => $"{Quantity} {(Quantity == 1 ? "porción" : "porciones")}";
+        public string TraditionalDisplay => $"{TraditionalQty} {(TraditionalQty == 1 ? "tradicional" : "tradicionales")}";
+        public string VeganDisplay => $"{VeganQty} {(VeganQty == 1 ? "vegana" : "veganas")}";
+
         public string TicketNumber => $"#{Code}";
         public string PaymentStatus => IsPaid ? "PAGADO" : "PENDIENTE";
         public string DeliveryStatus => IsDelivered ? "ENTREGADO" : "PENDIENTE DE ENTREGA";
-        public string QuantityDisplay => $"{Quantity} {(Quantity == 1 ? "porción" : "porciones")}";
 
         // Constructor
         public TicketViewModel()
         {
             // Constructor para crear un nuevo ticket
             SaleDate = DateTime.Now;
-            Quantity = 1;
+
         }
 
         // Constructor con mapeo de entidad
@@ -165,13 +195,15 @@ namespace GestionTalonarios.UI.ViewModels
             ClientId = ticket.ClientId;
             UnitCost = ticket.UnitCost;
             Code = ticket.Code;
-            Quantity = ticket.Quantity;
+
             IsPaid = ticket.IsPaid;
             IsDelivered = ticket.IsDelivered;
             Observations = ticket.Observations;
             WithdrawalTime = ticket.WithdrawalTime;
             SaleDate = ticket.SaleDate;
             PaymentDate = ticket.PaymentDate;
+            TraditionalQty = ticket.TraditionalQty;
+            VeganQty = ticket.VeganQty;
 
             // Mapear propiedades de navegación
             if (ticket.Seller != null)
@@ -192,7 +224,7 @@ namespace GestionTalonarios.UI.ViewModels
         // Método para recalcular el monto total
         private void RecalculateTotalAmount()
         {
-            TotalAmount = UnitCost * Quantity;
+            TotalAmount = UnitCost * (TraditionalQty + VeganQty);
         }
 
         // Método para convertir el ViewModel a entidad
@@ -205,13 +237,14 @@ namespace GestionTalonarios.UI.ViewModels
                 ClientId = ClientId,
                 Code = Code,
                 UnitCost = UnitCost,
-                Quantity = Quantity,
                 IsPaid = IsPaid,
                 IsDelivered = IsDelivered,
                 Observations = Observations,
                 WithdrawalTime = WithdrawalTime,
                 SaleDate = SaleDate,
-                PaymentDate = PaymentDate
+                PaymentDate = PaymentDate,
+                TraditionalQty = TraditionalQty,
+                VeganQty = VeganQty,
             };
 
             return ticket;
