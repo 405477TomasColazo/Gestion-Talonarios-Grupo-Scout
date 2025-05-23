@@ -184,5 +184,10 @@ namespace GestionTalonarios.Core.Services
 
             return await _ticketRepository.CodeExistsAsync(code);
         }
+
+        public async Task<PorcionesVentaDto> ObtenerPorcionesEnVentaAsync()
+        {
+            return await _ticketRepository.GetRemainingPortionsToSell();
+        }
     }
 }

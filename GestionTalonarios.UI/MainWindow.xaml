@@ -97,20 +97,70 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
+                
+
                 <!-- Agregar logo/nombre del grupo en el lado izquierdo -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBlock Text="GS José Hernández" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#0D47A1"/>
-                    <Button Content="Nuevo Ticket" 
-                    Command="{Binding NuevoTicketCommand}"
-                    Style="{StaticResource ActionButton}"/>
+                <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left">
+                    <!-- Fila superior: Logo y botón -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,8">
+                        <TextBlock Text="GS José Hernández" 
+                   FontWeight="Bold" 
+                   FontSize="16" 
+                   VerticalAlignment="Center" 
+                   Margin="0,0,10,0" 
+                   Foreground="#0D47A1"/>
+                        <Button Content="Nuevo Ticket" 
+                Command="{Binding NuevoTicketCommand}"
+                Style="{StaticResource ActionButton}"/>
+                    </StackPanel>
+
+                    <!-- Fila inferior: Contador de porciones en venta -->
+                    <Border Background="#FFF3E0" 
+            BorderBrush="#FF9800" 
+            BorderThickness="1" 
+            CornerRadius="4" 
+            Padding="8,4">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Porciones disponibles:" 
+                       FontSize="12" 
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       Margin="0,0,6,0"
+                       />
+                            <TextBlock Text="{Binding PorcionesEnVentaTradicionales}" 
+                       FontSize="12" 
+                       FontWeight="Bold" 
+                       Foreground="#2E7D32"
+                       VerticalAlignment="Center"
+                       Margin="0,0,2,0"/>
+                            <TextBlock Text="Tradicionales y" 
+                       FontSize="12" 
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       Margin="0,0,6,0"
+                       />
+                            <TextBlock Text="{Binding PorcionesEnVentaVeganas}" 
+                       FontSize="12" 
+                       FontWeight="Bold" 
+                       Foreground="#0D47A1"
+                       VerticalAlignment="Center"
+                       Margin="0,0,2,0"/>
+                            <TextBlock Text="Veganas" 
+                       FontSize="12" 
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       />
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="Porciones pendientes:" 
+                    <TextBlock Text="Porciones por entregar:" 
                FontSize="16" 
                FontWeight="SemiBold"
                VerticalAlignment="Center"
                Margin="0,0,10,0"/>
+                    
 
                     <Grid VerticalAlignment="Center">
                         <Grid.RowDefinitions>
@@ -385,7 +435,7 @@
                                 </Border>
 
                                 <!-- Observaciones -->
-                                <Expander Header="Observaciones" IsExpanded="False">
+                                <Expander Header="Observaciones" IsExpanded="True">
                                     <TextBox Name="txtObservations" 
                                TextWrapping="Wrap"
                                AcceptsReturn="True"

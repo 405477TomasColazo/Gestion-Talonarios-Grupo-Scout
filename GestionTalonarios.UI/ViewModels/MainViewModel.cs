@@ -29,6 +29,8 @@ namespace GestionTalonarios.UI.ViewModels
         private SearchType _tipoBusqueda;
         private bool _isBusy;
         private int _porcionesRestantes;
+        private int _porcionesEnVentaTradicionales;
+        private int _porcionesEnVentaVeganas;
         private int _porcionesTradicionalesRestantes;
         private int _porcionesVeganasRestantes;
         private string _statusMessage;
@@ -75,6 +77,16 @@ namespace GestionTalonarios.UI.ViewModels
         {
             get => _porcionesRestantes;
             set => SetProperty(ref _porcionesRestantes, value);
+        }
+        public int PorcionesEnVentaTradicionales
+        {
+            get => _porcionesEnVentaTradicionales;
+            set => SetProperty(ref _porcionesEnVentaTradicionales, value);
+        }
+        public int PorcionesEnVentaVeganas
+        {
+            get => _porcionesEnVentaVeganas;
+            set => SetProperty(ref _porcionesEnVentaVeganas, value);
         }
 
         public int PorcionesTradicionalesRestantes
@@ -418,6 +430,9 @@ namespace GestionTalonarios.UI.ViewModels
             try
             {
                 var porcionesData = await _ticketService.ObtenerDetallesPorcionesRestantesAsync();
+                var porcionesVenta = await _ticketService.ObtenerPorcionesEnVentaAsync();
+                PorcionesEnVentaTradicionales = porcionesVenta.PorcionesRestantesTradicionales;
+                PorcionesEnVentaVeganas = porcionesVenta.PorcionesRestantesVeganas;
                 PorcionesTradicionalesRestantes = porcionesData.PorcionesTradicionalesRestantes;
                 PorcionesVeganasRestantes = porcionesData.PorcionesVeganasRestantes;
                 PorcionesRestantes = porcionesData.TotalPorcionesRestantes;

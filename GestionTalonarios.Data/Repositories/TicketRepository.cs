@@ -86,9 +86,10 @@ namespace GestionTalonarios.Data.Repositories
                 SELECT t.*, s.name as SellerName, s.section as SellerSection, 
                        c.name as ClientName, c.phone as ClientPhone
                 FROM Tickets t
-                LEFT JOIN Selleres s ON t.seller_id = s.id
+                LEFT JOIN Sellers s ON t.seller_id = s.id
                 LEFT JOIN Clients c ON t.client_id = c.id
-                WHERE t.sold = 1";
+                WHERE t.sold = 1 
+                order by code";
 
                     var tickets = new List<Ticket>();
 
@@ -153,25 +154,25 @@ namespace GestionTalonarios.Data.Repositories
                 SELECT t.*, s.name as SellerName, s.section as SellerSection, 
                        c.name as ClientName, c.phone as ClientPhone
                 FROM Tickets t
-                LEFT JOIN Selleres s ON t.seller_id = s.id
+                LEFT JOIN Sellers s ON t.seller_id = s.id
                 LEFT JOIN Clients c ON t.client_id = c.id
                 WHERE t.sold = 1 and ";
 
                     switch (searchType)
                     {
                         case SearchType.Code:
-                            sql += "CAST(code AS NVARCHAR) LIKE @Busqueda";
+                            sql += "CAST(code AS NVARCHAR) LIKE @Busqueda order by code";
                             break;
                         case SearchType.Seller:
-                            sql += "s.name LIKE @Busqueda";
+                            sql += "s.name LIKE @Busqueda order by code";
                             break;
                         case SearchType.Client:
-                            sql += "c.name LIKE @Busqueda";
+                            sql += "c.name LIKE @Busqueda order by code";
                             break;
                         default: // Todos
                             sql += "(CAST(code AS NVARCHAR) LIKE @Busqueda OR " +
                                    "s.name LIKE @Busqueda OR " +
-                                   "c.name LIKE @Busqueda)";
+                                   "c.name LIKE @Busqueda) order by code";
                             break;
                     }
 
@@ -312,7 +313,7 @@ namespace GestionTalonarios.Data.Repositories
                     SUM(traditional_qty) AS PorcionesTradicionalesRestantes,
                     SUM(vegan_qty) AS PorcionesVeganasRestantes
                 FROM Tickets 
-                WHERE is_paid = 1 AND is_delivered = 0";
+                WHERE sold = 1 AND is_delivered = 0";
 
                     var result = await connection.QuerySingleAsync<PorcionesResumenDto>(sql);
 
@@ -321,6 +322,26 @@ namespace GestionTalonarios.Data.Repositories
                     result.PorcionesVeganasRestantes = result.PorcionesVeganasRestantes;
 
                     return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener detalles de porciones restantes");
+                throw;
+            }
+        }
+        public async Task<PorcionesVentaDto> GetRemainingPortionsToSell()
+        {
+            try
+            {
+                using (var connection = _connectionFactory.CreateConnection())
+                {
+                    await connection.OpenAsync();
+                    string sql = "select 900 - SUM(traditional_qty)PorcionesRestantesTradicionales, 50 - SUM(vegan_qty)PorcionesRestantesVeganas from Tickets";
+                    var result = await connection.QuerySingleAsync<PorcionesVentaDto>(sql);
+          
+                    return result;
+
                 }
             }
             catch (Exception ex)
@@ -396,5 +417,7 @@ namespace GestionTalonarios.Data.Repositories
                 throw;
             }
         }
+
+
     }
 }

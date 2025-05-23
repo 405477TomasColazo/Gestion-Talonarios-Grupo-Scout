@@ -19,5 +19,6 @@ namespace GestionTalonarios.Core.Interfaces
         Task<PorcionesResumenDto> GetRemainingPortionsDetailAsync();
         Task<decimal> GetDefaultUnitPriceAsync();
         Task<bool> CodeExistsAsync(int code);
+        Task<PorcionesVentaDto> GetRemainingPortionsToSell();
     }
 }

@@ -1,22 +1,22 @@
 -- First, insert all sellers with their corresponding sections
 -- Lobatos y lobeznas section
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('ARGUELLO, Luisana', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('CORREA Matheo', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('DE LA O''PRADOS, Joaquin', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('DIAZ SIMON, Guillermina', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('HEREDIA, Ambar', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('HEREDIA, India', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('JORNET LAVAYEN, Bautista', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('LESCANO, Nayla', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('LONGONI Luana', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('LUDUEÑA FASSI, Aldana', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('MAMONDES Indira', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('MAMONDES Khali', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('Quiroga Trucchia, Maylen', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('TORRES Mateo', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('ORRES PEÑAFLOR, Noah Nazare', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('URTIAGA, Julian', 'Lobatos y lobeznas');
-INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('Valdiviezo Berardi, Noah', 'Lobatos y lobeznas');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('ARGUELLO, Luisana', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('CORREA Matheo', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('DE LA O''PRADOS, Joaquin', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('DIAZ SIMON, Guillermina', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('HEREDIA, Ambar', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('HEREDIA, India', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('JORNET LAVAYEN, Bautista', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('LESCANO, Nayla', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('LONGONI Luana', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('LUDUEÑA FASSI, Aldana', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('MAMONDES Indira', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('MAMONDES Khali', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('Quiroga Trucchia, Maylen', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('TORRES Mateo', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('ORRES PEÑAFLOR, Noah Nazare', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('URTIAGA, Julian', 'Manada');
+INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('Valdiviezo Berardi, Noah', 'Manada');
 
 -- Unidad section
 INSERT INTO [dbo].[Selleres] ([name], [section]) VALUES ('Argüello, Ramiro Benjamín', 'Unidad');
