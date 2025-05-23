@@ -51,6 +51,7 @@ namespace GestionTalonarios.UI.ViewModels
                     // Refrescar estado de los comandos cuando cambia la selección
                     (MarcarPagadoCommand as RelayCommand)?.RaiseCanExecuteChanged();
                     (MarcarEntregadoCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                    (EditarObservacionesCommand as RelayCommand)?.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -114,7 +115,7 @@ namespace GestionTalonarios.UI.ViewModels
         public ICommand NuevoTicketCommand { get; }
         public ICommand VerDetallePorcionesCommand { get; }
         public ICommand LimpiarFiltrosCommand { get; }
-
+        public ICommand EditarObservacionesCommand { get; }
 
         // Constructor
         public MainViewModel(ITicketService ticketService,INavigationService navigationService)
@@ -139,6 +140,9 @@ namespace GestionTalonarios.UI.ViewModels
             NuevoTicketCommand = new RelayCommand(ExecuteNuevoTicket);
             VerDetallePorcionesCommand = new RelayCommand(async param => await ExecuteVerDetallePorcionesAsync());
             LimpiarFiltrosCommand = new RelayCommand(async param => await ExecuteLimpiarFiltrosAsync());
+            EditarObservacionesCommand = new RelayCommand(
+                param => ExecuteEditarObservaciones(),
+                param => CanExecuteEditarObservaciones());
 
             // Inicializar temporizador para actualizar cada 30 segundos
             _updateTimer = new DispatcherTimer
@@ -150,6 +154,64 @@ namespace GestionTalonarios.UI.ViewModels
 
             // Cargar datos iniciales
             LoadTicketsAsync();
+        }
+
+        private bool CanExecuteEditarObservaciones()
+        {
+            return SelectedTicket != null;
+        }
+
+        private void ExecuteEditarObservaciones()
+        {
+            if (SelectedTicket == null) return;
+
+            try
+            {
+                // Crear una ventana de diálogo para editar observaciones
+                var observacionesActuales = SelectedTicket.Observations ?? string.Empty;
+
+                var dialog = new Views.EditarObservacionesDialog(observacionesActuales)
+                {
+                    Owner = Application.Current.MainWindow,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+
+                if (dialog.ShowDialog() == true)
+                {
+                    var nuevasObservaciones = dialog.Observaciones;
+
+                    // Actualizar las observaciones del ticket
+                    Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await _ticketService.UpdateObservationsAsync(SelectedTicket.Id, nuevasObservaciones);
+
+                            // Actualizar en la UI thread
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                SelectedTicket.Observations = nuevasObservaciones;
+                                OnTicketUpdated(SelectedTicket);
+                                StatusMessage = $"Observaciones actualizadas para ticket #{SelectedTicket.Code}";
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                StatusMessage = "Error al actualizar observaciones.";
+                                MessageBox.Show($"Error al actualizar observaciones: {ex.Message}",
+                                              "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            });
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "Error al abrir editor de observaciones.";
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ExecuteNuevoTicket(object parameter)
@@ -276,6 +338,7 @@ namespace GestionTalonarios.UI.ViewModels
                 // Refrescar comandos
                 (MarcarPagadoCommand as RelayCommand)?.RaiseCanExecuteChanged();
                 (MarcarEntregadoCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                (EditarObservacionesCommand as RelayCommand)?.RaiseCanExecuteChanged();
 
                 // Actualizar contador de porciones
                 await ActualizarPorcionesRestantesAsync();

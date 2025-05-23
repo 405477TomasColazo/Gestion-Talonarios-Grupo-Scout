@@ -20,5 +20,6 @@ namespace GestionTalonarios.Core.Interfaces
         Task<decimal> GetDefaultUnitPriceAsync();
         Task<bool> CodeExistsAsync(int code);
         Task<PorcionesVentaDto> GetRemainingPortionsToSell();
+        Task UpdateObservationsAsync(int id, string observations);
     }
 }

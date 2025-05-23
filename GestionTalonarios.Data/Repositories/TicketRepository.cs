@@ -417,7 +417,38 @@ namespace GestionTalonarios.Data.Repositories
                 throw;
             }
         }
+        public async Task UpdateObservationsAsync(int id, string observations)
+        {
+            try
+            {
+                using (var connection = _connectionFactory.CreateConnection())
+                {
+                    await connection.OpenAsync();
 
+                    string sql = @"
+                UPDATE Tickets
+                SET observations = @Observations
+                WHERE id = @Id";
+
+                    var rowsAffected = await connection.ExecuteAsync(sql, new
+                    {
+                        Id = id,
+                        Observations = observations?.Trim()
+                    });
+
+                    if (rowsAffected == 0)
+                    {
+                        throw new InvalidOperationException($"No se encontró el ticket con ID {id}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al actualizar observaciones del ticket con ID {id}");
+                throw;
+            }
+        }
 
     }
+
 }

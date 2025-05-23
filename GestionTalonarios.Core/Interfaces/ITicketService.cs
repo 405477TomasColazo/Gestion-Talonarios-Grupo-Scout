@@ -25,5 +25,6 @@ namespace GestionTalonarios.Core.Interfaces
         Task<int> CrearTicketAsync(Ticket ticket);
         Task<bool> ExistTicketAsync(int code);
         Task<PorcionesVentaDto> ObtenerPorcionesEnVentaAsync();
+        Task UpdateObservationsAsync(int ticketId, string observations);
     }
 }

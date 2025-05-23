@@ -189,5 +189,32 @@ namespace GestionTalonarios.Core.Services
         {
             return await _ticketRepository.GetRemainingPortionsToSell();
         }
+
+        public async Task UpdateObservationsAsync(int ticketId, string observations)
+        {
+            try
+            {
+                // Validaciones básicas
+                if (ticketId <= 0)
+                {
+                    throw new ArgumentException("El ID del ticket debe ser mayor a cero", nameof(ticketId));
+                }
+
+                // Limitar el tamaño de las observaciones si es necesario
+                if (!string.IsNullOrEmpty(observations) && observations.Length > 1000)
+                {
+                    throw new ArgumentException("Las observaciones no pueden exceder los 1000 caracteres", nameof(observations));
+                }
+
+                await _ticketRepository.UpdateObservationsAsync(ticketId, observations);
+
+                _logger.LogInformation($"Observaciones actualizadas para el ticket ID {ticketId}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al actualizar observaciones del ticket ID {ticketId}");
+                throw;
+            }
+        }
     }
 }
