@@ -150,8 +150,11 @@ namespace GestionTalonarios.UI
                     txtSellerName.Text = ticket.SellerName;
                     txtClientName.Text = ticket.ClientName;
                     txtQuantity.Text = $"Total: {ticket.QuantityDisplay}";
-                    txtTraditional.Text = $"• {ticket.TraditionalDisplay}";
-                    txtVegan.Text = $"• {ticket.VeganDisplay}";
+                    if (FindName("txtTraditionalCount") is TextBlock txtTradCount)
+                        txtTradCount.Text = ticket.TraditionalQty.ToString();
+                    if (FindName("txtVeganCount") is TextBlock txtVegCount)
+                        txtVegCount.Text = ticket.VeganQty.ToString();
+
                     txtPaymentStatus.Text = ticket.PaymentStatus;
                     txtDeliveryStatus.Text = ticket.DeliveryStatus;
                     txtUnitPrice.Text = $"$ {ticket.UnitCost:N2}";

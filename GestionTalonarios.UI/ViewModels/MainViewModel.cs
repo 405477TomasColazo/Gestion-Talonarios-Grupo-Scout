@@ -318,7 +318,7 @@ namespace GestionTalonarios.UI.ViewModels
 
                 // Confirmar acción
                 var result = MessageBox.Show(
-                    $"¿Está seguro de marcar como PAGADO el ticket #{SelectedTicket.Id}?\n\n" +
+                    $"¿Está seguro de marcar como PAGADO el ticket #{SelectedTicket.Code}?\n\n" +
                     $"Cliente: {SelectedTicket.ClientName}\n" +
                     $"Cantidad: {SelectedTicket.Quantity} porciones\n" +
                     $"Monto: ${SelectedTicket.TotalAmount:N2}",
@@ -346,10 +346,10 @@ namespace GestionTalonarios.UI.ViewModels
                 OnTicketUpdated(SelectedTicket);
 
 
-                StatusMessage = $"Ticket #{SelectedTicket.Id} marcado como PAGADO.";
+                StatusMessage = $"Ticket #{SelectedTicket.Code} marcado como PAGADO.";
 
                 MessageBox.Show(
-                    $"El ticket #{SelectedTicket.Id} ha sido marcado como PAGADO.",
+                    $"El ticket #{SelectedTicket.Code} ha sido marcado como PAGADO.",
                     "Pago registrado",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
@@ -387,7 +387,7 @@ namespace GestionTalonarios.UI.ViewModels
 
                 // Confirmar acción
                 var result = MessageBox.Show(
-                    $"¿Está seguro de marcar como ENTREGADO el ticket #{SelectedTicket.Id}?\n\n" +
+                    $"¿Está seguro de marcar como ENTREGADO el ticket #{SelectedTicket.Code}?\n\n" +
                     $"Cliente: {SelectedTicket.ClientName}\n" +
                     $"Cantidad: {SelectedTicket.Quantity} porciones",
                     "Confirmar entrega",
@@ -397,7 +397,7 @@ namespace GestionTalonarios.UI.ViewModels
                 if (result != MessageBoxResult.Yes)
                     return;
 
-                await _ticketService.DeliverTicketAsync(SelectedTicket.Id);
+                await _ticketService.DeliverTicketAsync(SelectedTicket.Code);
 
                 // Actualizar modelo local
                 SelectedTicket.IsDelivered = true;
@@ -410,10 +410,10 @@ namespace GestionTalonarios.UI.ViewModels
                 await ActualizarPorcionesRestantesAsync();
                 OnTicketUpdated(SelectedTicket);
 
-                StatusMessage = $"Ticket #{SelectedTicket.Id} marcado como ENTREGADO.";
+                StatusMessage = $"Ticket #{SelectedTicket.Code} marcado como ENTREGADO.";
 
                 MessageBox.Show(
-                    $"El ticket #{SelectedTicket.Id} ha sido marcado como ENTREGADO.",
+                    $"El ticket #{SelectedTicket.Code} ha sido marcado como ENTREGADO.",
                     "Entrega registrada",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
@@ -460,7 +460,7 @@ namespace GestionTalonarios.UI.ViewModels
 
                 foreach (var ticket in ticketsPendientes)
                 {
-                    mensaje += $"Ticket #{ticket.Id} - {ticket.ClientName}: {ticket.Quantity} porciones\n";
+                    mensaje += $"Ticket #{ticket.Code} - {ticket.ClientName}: {ticket.Quantity} porciones\n";
                 }
 
                 mensaje += $"\nTotal: {PorcionesRestantes} porciones pendientes de entrega.";
