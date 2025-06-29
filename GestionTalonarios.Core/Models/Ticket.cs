@@ -11,8 +11,6 @@ namespace GestionTalonarios.Core.Models
     public class Ticket
     {
         [Key]
-        public int Id { get; set; }
-
         [Column("code")]
         public int Code { get; set; }
 

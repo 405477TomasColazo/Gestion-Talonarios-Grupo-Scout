@@ -185,7 +185,7 @@ namespace GestionTalonarios.UI.ViewModels
                     {
                         try
                         {
-                            await _ticketService.UpdateObservationsAsync(SelectedTicket.Id, nuevasObservaciones);
+                            await _ticketService.UpdateObservationsAsync(SelectedTicket.Code, nuevasObservaciones);
 
                             // Actualizar en la UI thread
                             Application.Current.Dispatcher.Invoke(() =>
@@ -329,7 +329,7 @@ namespace GestionTalonarios.UI.ViewModels
                 if (result != MessageBoxResult.Yes)
                     return;
 
-                await _ticketService.PayTicketAsync(SelectedTicket.Id);
+                await _ticketService.PayTicketAsync(SelectedTicket.Code);
 
                 // Actualizar modelo local
                 SelectedTicket.IsPaid = true;
@@ -514,7 +514,7 @@ namespace GestionTalonarios.UI.ViewModels
                 if (SelectedTicket == null)
                     return "No hay ticket seleccionado";
 
-                return $"Ticket #{SelectedTicket.Id}\n" +
+                return $"Ticket #{SelectedTicket.Code}\n" +
                        $"Vendedor: {SelectedTicket.SellerName}\n" +
                        $"Cliente: {SelectedTicket.ClientName}\n" +
                        $"Cantidad: {SelectedTicket.QuantityDisplay}\n" +

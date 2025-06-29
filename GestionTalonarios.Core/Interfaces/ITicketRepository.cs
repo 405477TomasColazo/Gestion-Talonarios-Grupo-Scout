@@ -13,13 +13,13 @@ namespace GestionTalonarios.Core.Interfaces
     {
         Task <IEnumerable<Ticket>> SearchTicketsAsync(string searchText,SearchType searchType);
         Task<Ticket> GetTicketByCode(int code);
-        Task PayTicketAsync(int id);
-        Task DeliverTicketAsync(int id);
+        Task PayTicketAsync(int code);
+        Task DeliverTicketAsync(int code);
         Task<int> GetRemainingPortionsCountAsync();
         Task<PorcionesResumenDto> GetRemainingPortionsDetailAsync();
         Task<decimal> GetDefaultUnitPriceAsync();
         Task<bool> CodeExistsAsync(int code);
         Task<PorcionesVentaDto> GetRemainingPortionsToSell();
-        Task UpdateObservationsAsync(int id, string observations);
+        Task UpdateObservationsAsync(int code, string observations);
     }
 }

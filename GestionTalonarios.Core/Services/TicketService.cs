@@ -33,20 +33,20 @@ namespace GestionTalonarios.Core.Services
             throw new NotImplementedException();
         }
 
-        public async Task DeleteTicketAsync(int id)
+        public async Task DeleteTicketAsync(int code)
         {
-            await _ticketRepository.DeleteAsync(id);
+            await _ticketRepository.DeleteAsync(code);
         }
 
-        public async Task DeliverTicketAsync(int id)
+        public async Task DeliverTicketAsync(int code)
         {
             try
             {
-                await _ticketRepository.DeliverTicketAsync(id);
+                await _ticketRepository.DeliverTicketAsync(code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al entregar el ticket de id: {id}");
+                _logger.LogError(ex, $"Error al entregar el ticket de código: {code}");
                 throw;
             }
         }
@@ -64,14 +64,15 @@ namespace GestionTalonarios.Core.Services
             }
         }
 
-        public async Task<Ticket> GetByIdAsync(int id)
+        public async Task<Ticket> GetByCodeAsync(int code)
         {
             try
             {
-                return await _ticketRepository.GetByIdAsync(id);    }
+                return await _ticketRepository.GetByIdAsync(code);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al obtener el ticket de id {id}");
+                _logger.LogError(ex, $"Error al obtener el ticket de código {code}");
                 throw;
             }
         }
@@ -113,15 +114,15 @@ namespace GestionTalonarios.Core.Services
             }
         }
 
-        public async Task PayTicketAsync(int id)
+        public async Task PayTicketAsync(int code)
         {
             try
             {
-                await _ticketRepository.PayTicketAsync(id);
+                await _ticketRepository.PayTicketAsync(code);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al pagar el ticket de id: {id}");
+                _logger.LogError(ex, $"Error al pagar el ticket de código: {code}");
                 throw;
             }
         }
@@ -190,14 +191,14 @@ namespace GestionTalonarios.Core.Services
             return await _ticketRepository.GetRemainingPortionsToSell();
         }
 
-        public async Task UpdateObservationsAsync(int ticketId, string observations)
+        public async Task UpdateObservationsAsync(int ticketCode, string observations)
         {
             try
             {
                 // Validaciones básicas
-                if (ticketId <= 0)
+                if (ticketCode <= 0)
                 {
-                    throw new ArgumentException("El ID del ticket debe ser mayor a cero", nameof(ticketId));
+                    throw new ArgumentException("El código del ticket debe ser mayor a cero", nameof(ticketCode));
                 }
 
                 // Limitar el tamaño de las observaciones si es necesario
@@ -206,13 +207,13 @@ namespace GestionTalonarios.Core.Services
                     throw new ArgumentException("Las observaciones no pueden exceder los 1000 caracteres", nameof(observations));
                 }
 
-                await _ticketRepository.UpdateObservationsAsync(ticketId, observations);
+                await _ticketRepository.UpdateObservationsAsync(ticketCode, observations);
 
-                _logger.LogInformation($"Observaciones actualizadas para el ticket ID {ticketId}");
+                _logger.LogInformation($"Observaciones actualizadas para el ticket código {ticketCode}");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al actualizar observaciones del ticket ID {ticketId}");
+                _logger.LogError(ex, $"Error al actualizar observaciones del ticket código {ticketCode}");
                 throw;
             }
         }

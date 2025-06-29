@@ -17,11 +17,11 @@ namespace GestionTalonarios.Data.Repositories
     public class TicketRepository:RepositoryBase<Ticket>,ITicketRepository
     {
         public TicketRepository(ConnectionFactory connectionFactory, ILogger<TicketRepository> logger)
-    : base(connectionFactory, logger, "Tickets")
+    : base(connectionFactory, logger, "Tickets", "code")
         {
         }
 
-        public async Task DeliverTicketAsync(int id)
+        public async Task DeliverTicketAsync(int code)
         {
             try
             {
@@ -31,16 +31,16 @@ namespace GestionTalonarios.Data.Repositories
 
                     string sql = @"
                 UPDATE Tickets
-                SET is_delivered= 1,
-                    payment_date = @FechaPago
-                WHERE id = @Id";
+                SET is_delivered = 1,
+                    withdrawal_time = @FechaEntrega
+                WHERE code = @Code";
 
-                    await connection.ExecuteAsync(sql, new { Id = id, FechaPago = DateTime.Now });
+                    await connection.ExecuteAsync(sql, new { Code = code, FechaEntrega = DateTime.Now });
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al marcar como pagado el ticket con ID {id}");
+                _logger.LogError(ex, $"Error al marcar como entregado el ticket con código {code}");
                 throw;
             }
         }
@@ -50,7 +50,7 @@ namespace GestionTalonarios.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task PayTicketAsync(int id)
+        public async Task PayTicketAsync(int code)
         {
             try
             {
@@ -62,14 +62,14 @@ namespace GestionTalonarios.Data.Repositories
                 UPDATE Tickets
                 SET is_paid = 1,
                     payment_date = @FechaPago
-                WHERE id = @Id";
+                WHERE code = @Code";
 
-                    await connection.ExecuteAsync(sql, new { Id = id, FechaPago = DateTime.Now });
+                    await connection.ExecuteAsync(sql, new { Code = code, FechaPago = DateTime.Now });
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al marcar como pagado el ticket con ID {id}");
+                _logger.LogError(ex, $"Error al marcar como pagado el ticket con código {code}");
                 throw;
             }
         }
@@ -100,10 +100,9 @@ namespace GestionTalonarios.Data.Repositories
                         {
                             var ticket = new Ticket
                             {
-                                Id = row.id,
+                                Code = row.code,
                                 SellerId = row.seller_id,
                                 ClientId = row.client_id,
-                                Code = row.code,
                                 UnitCost = row.unit_cost,
                                 IsPaid = row.is_paid,
                                 Sold = row.sold,
@@ -183,12 +182,11 @@ namespace GestionTalonarios.Data.Repositories
                     {
                         var ticket = new Ticket
                         {
-                            Id = row.id,
+                            Code = row.code,
                             SellerId = row.seller_id,
                             ClientId = row.client_id,
                             UnitCost = row.unit_cost,
                             IsPaid = row.is_paid,
-                            Code = row.code,
                             Sold = row.sold,
                             TraditionalQty = row.traditional_qty,
                             VeganQty = row.vegan_qty,
@@ -233,17 +231,17 @@ namespace GestionTalonarios.Data.Repositories
                 sql,
                 (ticket, seller, client) =>
                 {
-                    if (!ticketDictionary.TryGetValue(ticket.Id, out var existingTicket))
+                    if (!ticketDictionary.TryGetValue(ticket.Code, out var existingTicket))
                     {
                         existingTicket = ticket;
                         existingTicket.Seller = seller;
                         existingTicket.Client = client;
-                        ticketDictionary.Add(existingTicket.Id, existingTicket);
+                        ticketDictionary.Add(existingTicket.Code, existingTicket);
                     }
                     return existingTicket;
                 },
                 parameters,
-                splitOn: "id,id"
+                splitOn: "code,code"
             );
 
             return ticketDictionary.Values;
@@ -417,7 +415,7 @@ namespace GestionTalonarios.Data.Repositories
                 throw;
             }
         }
-        public async Task UpdateObservationsAsync(int id, string observations)
+        public async Task UpdateObservationsAsync(int code, string observations)
         {
             try
             {
@@ -428,23 +426,23 @@ namespace GestionTalonarios.Data.Repositories
                     string sql = @"
                 UPDATE Tickets
                 SET observations = @Observations
-                WHERE id = @Id";
+                WHERE code = @Code";
 
                     var rowsAffected = await connection.ExecuteAsync(sql, new
                     {
-                        Id = id,
+                        Code = code,
                         Observations = observations?.Trim()
                     });
 
                     if (rowsAffected == 0)
                     {
-                        throw new InvalidOperationException($"No se encontró el ticket con ID {id}");
+                        throw new InvalidOperationException($"No se encontró el ticket con código {code}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al actualizar observaciones del ticket con ID {id}");
+                _logger.LogError(ex, $"Error al actualizar observaciones del ticket con código {code}");
                 throw;
             }
         }

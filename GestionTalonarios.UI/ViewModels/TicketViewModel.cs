@@ -10,7 +10,6 @@ namespace GestionTalonarios.UI.ViewModels
 {
     public class TicketViewModel : ViewModelBase
     {
-        private int _id;
         private int _code;
         private int _sellerId;
         private string _sellerName;
@@ -28,12 +27,6 @@ namespace GestionTalonarios.UI.ViewModels
         private decimal _totalAmount; // Monto total (cantidad x precio unitario)
         private int _traditionalQty;
         private int _veganQty;
-
-        public int Id
-        {
-            get => _id;
-            set => SetProperty(ref _id, value);
-        }
 
         public int Code
         {
@@ -190,11 +183,10 @@ namespace GestionTalonarios.UI.ViewModels
         public TicketViewModel(Ticket ticket)
         {
             // Mapear desde la entidad de dominio
-            Id = ticket.Id;
+            Code = ticket.Code;
             SellerId = ticket.SellerId;
             ClientId = ticket.ClientId;
             UnitCost = ticket.UnitCost;
-            Code = ticket.Code;
 
             IsPaid = ticket.IsPaid;
             IsDelivered = ticket.IsDelivered;
@@ -232,10 +224,9 @@ namespace GestionTalonarios.UI.ViewModels
         {
             var ticket = new Ticket
             {
-                Id = Id,
+                Code = Code,
                 SellerId = SellerId,
                 ClientId = ClientId,
-                Code = Code,
                 UnitCost = UnitCost,
                 IsPaid = IsPaid,
                 IsDelivered = IsDelivered,
