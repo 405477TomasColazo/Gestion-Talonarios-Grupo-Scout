@@ -119,6 +119,7 @@ namespace GestionTalonarios.UI.ViewModels
         public ICommand LimpiarFiltrosCommand { get; }
         public ICommand EditarObservacionesCommand { get; }
         public ICommand ImportarExcelCommand { get; }
+        public ICommand ReportesFinancierosCommand { get; }
 
         // Constructor
         public MainViewModel(ITicketService ticketService, INavigationService navigationService, IImportService importService)
@@ -148,6 +149,7 @@ namespace GestionTalonarios.UI.ViewModels
                 param => ExecuteEditarObservaciones(),
                 param => CanExecuteEditarObservaciones());
             ImportarExcelCommand = new RelayCommand(async param => await ExecuteImportarExcelAsync());
+            ReportesFinancierosCommand = new RelayCommand(param => ExecuteReportesFinancieros());
 
             // Inicializar temporizador para actualizar cada 30 segundos
             _updateTimer = new DispatcherTimer
@@ -579,6 +581,21 @@ namespace GestionTalonarios.UI.ViewModels
                 _navigationService.ShowMessageBox(
                     $"Error durante la importación: {ex.Message}", 
                     "Error de Importación", 
+                    MessageBoxImage.Error);
+            }
+        }
+
+        private void ExecuteReportesFinancieros()
+        {
+            try
+            {
+                _navigationService.ShowFinancialReportsWindow();
+            }
+            catch (Exception ex)
+            {
+                _navigationService.ShowMessageBox(
+                    $"Error al abrir reportes financieros: {ex.Message}",
+                    "Error",
                     MessageBoxImage.Error);
             }
         }

@@ -112,7 +112,12 @@
                         <Button Content="Importar Excel" 
                                 Command="{Binding ImportarExcelCommand}"
                                 Style="{StaticResource ActionButton}"
-                                Background="#607D8B"/>
+                                Background="#607D8B"
+                                Margin="0,0,10,0"/>
+                        <Button Content="📊 Reportes Financieros" 
+                                Command="{Binding ReportesFinancierosCommand}"
+                                Style="{StaticResource ActionButton}"
+                                Background="#FF9800"/>
                     </StackPanel>
 
                     <!-- Fila inferior: Contador de porciones en venta -->

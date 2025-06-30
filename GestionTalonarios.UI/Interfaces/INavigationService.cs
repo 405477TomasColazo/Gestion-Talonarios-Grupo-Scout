@@ -12,5 +12,7 @@ namespace GestionTalonarios.UI.Interfaces
         bool? ShowDialog<T>() where T : Window;
         string? ShowOpenFileDialog(string filter = "Archivos Excel|*.xlsx;*.xls", string title = "Seleccionar archivo");
         void ShowMessageBox(string message, string title = "Información", MessageBoxImage icon = MessageBoxImage.Information);
+        void ShowFinancialReportsWindow();
+        void ShowCommissionConfigWindow();
     }
 }

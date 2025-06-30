@@ -108,6 +108,7 @@ namespace GestionTalonarios.UI
             // Registrar repositorios
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<ICommissionRepository, CommissionRepository>();
             // Agregar otros repositorios si es necesario
         }
 
@@ -120,6 +121,7 @@ namespace GestionTalonarios.UI
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<IImportService, ImportService>();
+            services.AddScoped<ICommissionService, CommissionService>();
             services.AddSingleton<INavigationService, NavigationService>();
             // Agregar otros servicios si es necesario
         }
@@ -131,6 +133,8 @@ namespace GestionTalonarios.UI
         {
             // Registrar ViewModels - cambiar a Scoped para que funcione con servicios Scoped
             services.AddScoped<MainViewModel>();
+            services.AddScoped<FinancialReportsViewModel>();
+            services.AddScoped<CommissionConfigViewModel>();
             // Agregar otros ViewModels si es necesario
         }
 
@@ -144,6 +148,8 @@ namespace GestionTalonarios.UI
             services.AddTransient<NuevoTicketWindow>();
             services.AddTransient<ImportProgressDialog>();
             services.AddTransient<ImportResultDialog>();
+            services.AddTransient<FinancialReportsWindow>();
+            services.AddTransient<CommissionConfigWindow>();
             // Agregar otras ventanas si es necesario
         }
 
