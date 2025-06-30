@@ -50,7 +50,7 @@ namespace GestionTalonarios.UI
             if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(this))
             {
                 // Crear datos de diseño para vista previa
-                DataContext = new MainViewModel(null,null); // No usar en producción
+                DataContext = new MainViewModel(null, null, null); // No usar en producción
             }
         }
 

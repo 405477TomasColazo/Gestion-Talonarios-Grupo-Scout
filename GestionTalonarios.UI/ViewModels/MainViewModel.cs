@@ -13,6 +13,7 @@ using GestionTalonarios.Core.Enums;
 using GestionTalonarios.UI.Views;
 using Microsoft.Extensions.DependencyInjection;
 using GestionTalonarios.UI.Interfaces;
+using GestionTalonarios.Core.DTOs;
 
 namespace GestionTalonarios.UI.ViewModels
 {
@@ -21,6 +22,7 @@ namespace GestionTalonarios.UI.ViewModels
         private readonly ITicketService _ticketService;
         private readonly DispatcherTimer _updateTimer;
         private readonly INavigationService _navigationService;
+        private readonly IImportService _importService;
 
         // Propiedades observables
         private ObservableCollection<TicketViewModel> _tickets;
@@ -116,12 +118,14 @@ namespace GestionTalonarios.UI.ViewModels
         public ICommand VerDetallePorcionesCommand { get; }
         public ICommand LimpiarFiltrosCommand { get; }
         public ICommand EditarObservacionesCommand { get; }
+        public ICommand ImportarExcelCommand { get; }
 
         // Constructor
-        public MainViewModel(ITicketService ticketService,INavigationService navigationService)
+        public MainViewModel(ITicketService ticketService, INavigationService navigationService, IImportService importService)
         {
             _ticketService = ticketService;
             _navigationService = navigationService;
+            _importService = importService;
 
             // Inicializar colecciones
             Tickets = new ObservableCollection<TicketViewModel>();
@@ -143,6 +147,7 @@ namespace GestionTalonarios.UI.ViewModels
             EditarObservacionesCommand = new RelayCommand(
                 param => ExecuteEditarObservaciones(),
                 param => CanExecuteEditarObservaciones());
+            ImportarExcelCommand = new RelayCommand(async param => await ExecuteImportarExcelAsync());
 
             // Inicializar temporizador para actualizar cada 30 segundos
             _updateTimer = new DispatcherTimer
@@ -523,6 +528,60 @@ namespace GestionTalonarios.UI.ViewModels
             }
         }
 
+        private async Task ExecuteImportarExcelAsync()
+        {
+            try
+            {
+                // Mostrar diálogo de seleccionar archivo
+                var filePath = _navigationService.ShowOpenFileDialog(
+                    "Archivos Excel|*.xlsx;*.xls", 
+                    "Seleccionar archivo Excel para importar tickets");
+                
+                if (string.IsNullOrEmpty(filePath))
+                    return;
+
+                // Mostrar diálogo de progreso
+                var progressDialog = new ImportProgressDialog { Owner = Application.Current.MainWindow };
+                progressDialog.Show();
+
+                ImportResult result = null;
+
+                try
+                {
+                    progressDialog.UpdateStatus("Validando archivo Excel...");
+                    
+                    // Ejecutar importación en segundo plano
+                    await Task.Run(async () =>
+                    {
+                        result = await _importService.ImportTicketsFromExcelAsync(filePath);
+                    });
+                }
+                finally
+                {
+                    progressDialog.Close();
+                }
+
+                // Mostrar resultado
+                var resultDialog = new ImportResultDialog(result) { Owner = Application.Current.MainWindow };
+                resultDialog.ShowDialog();
+
+                // Si hubo importaciones exitosas, recargar datos
+                if (result.SuccessfulImports > 0)
+                {
+                    await LoadTicketsAsync();
+                    await ActualizarPorcionesRestantesAsync();
+                    
+                    StatusMessage = $"Importación completada: {result.SuccessfulImports} tickets importados exitosamente";
+                }
+            }
+            catch (Exception ex)
+            {
+                _navigationService.ShowMessageBox(
+                    $"Error durante la importación: {ex.Message}", 
+                    "Error de Importación", 
+                    MessageBoxImage.Error);
+            }
+        }
 
     }
 }

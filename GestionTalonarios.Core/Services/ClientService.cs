@@ -18,7 +18,7 @@ namespace GestionTalonarios.Core.Services
             _clientRepository = clientRepository;
         }
 
-        public async Task<Client> BuscarClientePorNombreAsync(string nombre)
+        public async Task<Client?> BuscarClientePorNombreAsync(string nombre)
         {
             if (string.IsNullOrWhiteSpace(nombre))
                 return null;
@@ -35,6 +35,29 @@ namespace GestionTalonarios.Core.Services
                 throw new ArgumentException("El nombre del cliente es requerido");
 
             return await _clientRepository.AddAync(cliente);
+        }
+
+        public async Task<Client> FindOrCreateClientAsync(string nombre)
+        {
+            if (string.IsNullOrWhiteSpace(nombre))
+                throw new ArgumentException("El nombre del cliente es requerido", nameof(nombre));
+
+            // Buscar cliente existente
+            var clienteExistente = await BuscarClientePorNombreAsync(nombre);
+            if (clienteExistente != null)
+                return clienteExistente;
+
+            // Crear nuevo cliente
+            var nuevoCliente = new Client
+            {
+                Name = nombre.Trim(),
+                Phone = string.Empty // Teléfono vacío por defecto
+            };
+
+            var clienteId = await CrearClienteAsync(nuevoCliente);
+            nuevoCliente.Id = clienteId;
+
+            return nuevoCliente;
         }
     }
 }

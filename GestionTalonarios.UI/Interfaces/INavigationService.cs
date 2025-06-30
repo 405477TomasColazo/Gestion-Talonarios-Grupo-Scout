@@ -10,5 +10,7 @@ namespace GestionTalonarios.UI.Interfaces
     public interface INavigationService
     {
         bool? ShowDialog<T>() where T : Window;
+        string? ShowOpenFileDialog(string filter = "Archivos Excel|*.xlsx;*.xls", string title = "Seleccionar archivo");
+        void ShowMessageBox(string message, string title = "Información", MessageBoxImage icon = MessageBoxImage.Information);
     }
 }

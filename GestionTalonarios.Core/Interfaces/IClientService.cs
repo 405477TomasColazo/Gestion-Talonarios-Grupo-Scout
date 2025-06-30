@@ -9,7 +9,8 @@ namespace GestionTalonarios.Core.Interfaces
 {
     public interface IClientService
     {
-        Task<Client> BuscarClientePorNombreAsync(string nombre);
+        Task<Client?> BuscarClientePorNombreAsync(string nombre);
         Task<int> CrearClienteAsync(Client cliente);
+        Task<Client> FindOrCreateClientAsync(string nombre);
     }
 }

@@ -119,6 +119,7 @@ namespace GestionTalonarios.UI
             // Registrar servicios de negocio
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IImportService, ImportService>();
             services.AddSingleton<INavigationService, NavigationService>();
             // Agregar otros servicios si es necesario
         }
@@ -128,8 +129,8 @@ namespace GestionTalonarios.UI
         /// </summary>
         private void ConfigureViewModels(IServiceCollection services)
         {
-            // Registrar ViewModels
-            services.AddSingleton<MainViewModel>();
+            // Registrar ViewModels - cambiar a Scoped para que funcione con servicios Scoped
+            services.AddScoped<MainViewModel>();
             // Agregar otros ViewModels si es necesario
         }
 
@@ -141,6 +142,8 @@ namespace GestionTalonarios.UI
             // Registrar ventanas
             services.AddTransient<MainWindow>();
             services.AddTransient<NuevoTicketWindow>();
+            services.AddTransient<ImportProgressDialog>();
+            services.AddTransient<ImportResultDialog>();
             // Agregar otras ventanas si es necesario
         }
 
