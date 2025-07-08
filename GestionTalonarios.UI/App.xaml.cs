@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using OfficeOpenXml;
 
 namespace GestionTalonarios.UI
 {
@@ -30,6 +31,9 @@ namespace GestionTalonarios.UI
         /// </summary>
         protected override void OnStartup(StartupEventArgs e)
         {
+            // Configurar licencia de EPPlus 8.0 para importación de Excel
+            ExcelPackage.License.SetNonCommercialPersonal("GestionTalonarios");
+
             // Configurar servicios y DI antes de iniciar la aplicación
             ConfigureServices();
 

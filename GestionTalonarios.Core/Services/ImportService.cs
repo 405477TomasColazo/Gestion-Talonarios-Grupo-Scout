@@ -371,12 +371,7 @@ namespace GestionTalonarios.Core.Services
 
         private ExcelPackage CreateExcelPackage(string filePath)
         {
-            // Para EPPlus 8.0+, configurar variable de entorno si no existe
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("EPPlus_ExcelPackage_License")))
-            {
-                Environment.SetEnvironmentVariable("EPPlus_ExcelPackage_License", "NonCommercial");
-            }
-            
+            // La licencia de EPPlus 8.0 ya está configurada al inicio de la aplicación
             return new ExcelPackage(new FileInfo(filePath));
         }
     }
